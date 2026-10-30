@@ -1,0 +1,20 @@
+{{- /*
+  站内搜索索引：/index.json
+  由 home 的 json outputFormat 渲染，字段全部为纯文本，前端直接消费。
+  想排除某篇文章，在 front matter 里加 searchExclude = true 即可。
+*/ -}}
+{{- $pages := where site.RegularPages "Params.searchExclude" "ne" true -}}
+{{- $items := slice -}}
+{{- range $pages -}}
+  {{- $text := .Plain | htmlUnescape | chomp | truncate 4000 "" -}}
+  {{- $items = $items | append (dict
+      "title"   .Title
+      "link"    .RelPermalink
+      "date"    (.Date.Format "2006-01-02")
+      "section" .Section
+      "tags"    (delimit (.Params.tags | default slice) " ")
+      "summary" (.Summary | plainify | htmlUnescape | chomp | truncate 300 "")
+      "text"    $text
+    ) -}}
+{{- end -}}
+{{- dict "pages" $items | jsonify -}}

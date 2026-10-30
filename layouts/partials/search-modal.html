@@ -1,0 +1,448 @@
+{{- /* 站内搜索：命令面板式弹窗 + 可复用的搜索核心 =====================
+   1) 定义 window.BlogSearch.create(root, opts)，供弹窗与 /search/ 页面共用
+   2) 渲染弹窗本身，并接管所有指向 /search/ 的链接（无 JS 时仍能跳转页面）
+   root 内需要：[data-search-input] [data-search-results] [data-search-meta]
+   ================================================================== */ -}}
+{{- $indexURL := "index.json" | relURL -}}
+<div id="bs-modal" class="bs-overlay" hidden aria-hidden="true">
+  <div class="bs-backdrop" data-search-close></div>
+  <div class="bs-panel" role="dialog" aria-modal="true" aria-label="站内搜索">
+    <div class="bs-head">
+      <svg class="bs-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input
+        class="bs-input"
+        data-search-input
+        type="text"
+        placeholder="搜索标题、标签、正文…"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-label="站内搜索"
+        aria-controls="bs-results"
+      >
+      <button class="bs-x" type="button" data-search-clear title="清空" aria-label="清空" hidden>&times;</button>
+      <kbd class="bs-esc">Esc</kbd>
+    </div>
+    <p class="bs-meta" data-search-meta role="status" aria-live="polite"></p>
+    <div class="bs-results" id="bs-results" data-search-results role="listbox" aria-label="搜索结果"></div>
+    <div class="bs-foot">
+      <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> 选择</span>
+      <span><kbd>&crarr;</kbd> 打开</span>
+      <span><kbd>esc</kbd> 关闭</span>
+      <span class="bs-foot-r">共 <b data-search-total>0</b> 篇</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  html.bs-lock { overflow: hidden; }
+  .bs-overlay {
+    --bs-pink: #f9a8d4; --bs-line: rgba(255,255,255,.16);
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: clamp(.8rem, 8vh, 6rem) 1rem 1rem;
+    font-family: 'Fira Code', ui-monospace, monospace;
+  }
+  .bs-overlay[hidden] { display: none; }
+  .bs-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.72); }
+  .bs-panel {
+    position: relative; width: 100%; max-width: 38rem; max-height: min(80vh, 40rem);
+    display: flex; flex-direction: column; overflow: hidden;
+    background: #16141a; border: 1px solid rgba(249,168,212,.35); border-radius: .8rem;
+    box-shadow: 0 24px 64px rgba(0,0,0,.65), 0 0 0 1px rgba(0,0,0,.4);
+    animation: bs-in .16s ease-out;
+  }
+  .bs-panel--inline { max-height: none; max-width: 100%; box-shadow: none; animation: none; }
+  @keyframes bs-in { from { opacity: 0; transform: translateY(-8px) scale(.99); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .bs-panel { animation: none; } }
+
+  .bs-head { display: flex; align-items: center; gap: .55rem; padding: .85rem 1rem; border-bottom: 1px solid var(--bs-line); }
+  .bs-icon { width: 18px; height: 18px; flex: none; fill: none; stroke: #d1d5db; stroke-width: 1.8; }
+  .bs-input {
+    flex: 1 1 auto; min-width: 0; background: transparent; border: 0; outline: 0;
+    color: #fff; font: inherit; font-size: 1rem; line-height: 1.6; padding: 0;
+  }
+  .bs-input::placeholder { color: rgba(255,255,255,.4); }
+  .bs-x { flex: none; background: transparent; border: 0; color: rgba(255,255,255,.55); font-size: 1.35rem; line-height: 1; cursor: pointer; padding: 0 .15rem; }
+  .bs-x:hover { color: var(--bs-pink); }
+  kbd {
+    font: 600 .68rem/1.5 ui-monospace, monospace; color: rgba(255,255,255,.5);
+    border: 1px solid var(--bs-line); border-radius: .3rem; padding: .05rem .3rem;
+  }
+  .bs-esc { flex: none; }
+
+  .bs-meta { margin: 0; padding: .6rem 1rem .2rem; font-size: .78rem; color: rgba(255,255,255,.5); min-height: 1.6em; }
+  .bs-results { overflow-y: auto; overscroll-behavior: contain; padding: .3rem .5rem .5rem; }
+  .bs-results:empty { display: none; }
+
+  .bs-item {
+    display: block; text-decoration: none; border-radius: .5rem; padding: .6rem .7rem;
+    border-left: 2px solid transparent; cursor: pointer;
+  }
+  .bs-item + .bs-item { margin-top: .1rem; }
+  .bs-item[aria-selected="true"] { background: rgba(249,168,212,.1); border-left-color: var(--bs-pink); }
+  .bs-item h3 { margin: 0; font-size: .95rem; font-weight: 600; color: #fff; line-height: 1.5; }
+  .bs-item[aria-selected="true"] h3 { color: var(--bs-pink); }
+  .bs-item .bs-sub { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .15rem; font-size: .72rem; color: rgba(255,255,255,.45); }
+  .bs-item p { margin: .25rem 0 0; font-size: .8rem; line-height: 1.6; color: rgba(255,255,255,.65);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .bs-item mark { background: rgba(249,168,212,.28); color: #fff; border-radius: .15rem; padding: 0 .1rem; }
+  .bs-empty { padding: 1.6rem .5rem 2rem; text-align: center; font-size: .85rem; color: rgba(255,255,255,.5); }
+  .bs-empty code { color: var(--bs-pink); }
+
+  .bs-foot { display: flex; gap: .9rem; align-items: center; padding: .5rem 1rem; border-top: 1px solid var(--bs-line);
+    font-size: .72rem; color: rgba(255,255,255,.4); }
+  .bs-foot span { display: inline-flex; align-items: center; gap: .2rem; }
+  .bs-foot-r { margin-left: auto; }
+  .bs-foot b { color: rgba(255,255,255,.7); }
+  @media (max-width: 480px) { .bs-esc, .bs-foot span:not(.bs-foot-r) { display: none; } }
+</style>
+
+<script>
+(function () {
+  "use strict";
+
+  var INDEX_URL = {{ $indexURL }};
+  var DEBOUNCE = 120;
+  var LABELS = { blog: "文章", posts: "文章", post: "文章", life: "生活", archives: "归档", search: "搜索" };
+  var seq = 0;
+
+  /* ---------- 数据 ---------- */
+  var docs = null, loading = null;
+
+  function loadIndex() {
+    if (docs) return Promise.resolve(docs);
+    if (loading) return loading;
+    loading = fetch(INDEX_URL, { credentials: "same-origin" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        docs = (data && data.pages) || [];
+        docs.forEach(function (d) {
+          d._title = (d.title || "").toLowerCase();
+          d._tags = (d.tags || "").toLowerCase();
+          d._summary = (d.summary || "").toLowerCase();
+          d._text = (d.text || "").toLowerCase();
+        });
+        return docs;
+      })
+      .catch(function (err) {
+        loading = null;
+        throw err;
+      });
+    return loading;
+  }
+
+  /* ---------- 匹配 ---------- */
+  function parseQuery(q) {
+    var phrases = [];
+    var rest = q.replace(/"([^"]+)"|“([^”]+)”/g, function (_, a, b) {
+      var p = (a || b || "").trim();
+      if (p) phrases.push(p);
+      return " ";
+    });
+    var words = rest.split(/[\s,，、;；]+/).filter(Boolean);
+    return {
+      phrases: phrases,
+      words: words,
+      terms: phrases.map(function (t) { return { text: t.toLowerCase(), phrase: true }; })
+        .concat(words.map(function (t) { return { text: t.toLowerCase(), phrase: false }; }))
+    };
+  }
+
+  function countOccur(hay, needle) {
+    if (!needle) return 0;
+    var n = 0, i = 0;
+    while (n < 20) {
+      i = hay.indexOf(needle, i);
+      if (i === -1) break;
+      n++;
+      i += needle.length;
+    }
+    return n;
+  }
+
+  function scoreDoc(doc, terms) {
+    var score = 0, hits = 0;
+    for (var i = 0; i < terms.length; i++) {
+      var t = terms[i], s = 0;
+      if (doc._title.indexOf(t.text) !== -1) s += 60;
+      if (doc._tags.indexOf(t.text) !== -1) s += 30;
+      if (doc._summary.indexOf(t.text) !== -1) s += 15;
+      var c = countOccur(doc._text, t.text);
+      if (c) s += Math.min(c, 8) * (t.phrase ? 4 : 3);
+      if (s > 0) hits++;
+      score += s;
+    }
+    if (!hits) return 0;
+    if (terms.length > 1) score *= 0.45 + 0.55 * (hits / terms.length);
+    return score;
+  }
+
+  function snippet(doc, terms) {
+    var src = doc.text || doc.summary || "";
+    var lower = src.toLowerCase();
+    var pos = -1, len = 0;
+    for (var i = 0; i < terms.length; i++) {
+      var p = lower.indexOf(terms[i].text);
+      if (p !== -1 && (pos === -1 || p < pos)) { pos = p; len = terms[i].text.length; }
+    }
+    if (pos === -1) return doc.summary || "";
+    var start = Math.max(0, pos - 40);
+    var end = Math.min(src.length, pos + len + 100);
+    return (start > 0 ? "…" : "") + src.slice(start, end).replace(/\s+/g, " ").trim() + (end < src.length ? "…" : "");
+  }
+
+  /* 用 DOM 文本节点拼 <mark>，绝不把正文当 HTML 解析 */
+  function highlight(parent, text, terms) {
+    var needles = terms.map(function (t) { return t.text; }).filter(Boolean);
+    if (!needles.length) { parent.textContent = text; return; }
+    var lower = text.toLowerCase(), marks = [];
+    needles.forEach(function (n) {
+      var i = 0;
+      while (marks.length < 40) {
+        i = lower.indexOf(n, i);
+        if (i === -1) break;
+        marks.push([i, i + n.length]);
+        i += n.length;
+      }
+    });
+    if (!marks.length) { parent.textContent = text; return; }
+    marks.sort(function (a, b) { return a[0] - b[0]; });
+    var merged = [];
+    marks.forEach(function (m) {
+      var last = merged[merged.length - 1];
+      if (last && m[0] <= last[1]) last[1] = Math.max(last[1], m[1]);
+      else merged.push([m[0], m[1]]);
+    });
+    var cursor = 0;
+    merged.forEach(function (m) {
+      if (m[0] > cursor) parent.appendChild(document.createTextNode(text.slice(cursor, m[0])));
+      var mark = document.createElement("mark");
+      mark.textContent = text.slice(m[0], m[1]);
+      parent.appendChild(mark);
+      cursor = m[1];
+    });
+    if (cursor < text.length) parent.appendChild(document.createTextNode(text.slice(cursor)));
+  }
+
+  /* ---------- 一个可复用的搜索组件 ---------- */
+  function create(root, opts) {
+    opts = opts || {};
+    var input = root.querySelector("[data-search-input]");
+    var results = root.querySelector("[data-search-results]");
+    var meta = root.querySelector("[data-search-meta]");
+    var clearBtn = root.querySelector("[data-search-clear]");
+    var totalEl = root.querySelector("[data-search-total]");
+    var limit = opts.limit || 20;
+    var section = "";
+    var items = [];
+    var cursor = -1;
+    var timer = null;
+
+    var host = results.id || (results.id = "bs-results-" + (++seq));
+    input.setAttribute("aria-controls", host);
+
+    function setMeta(text) { if (meta) meta.textContent = text; }
+
+    function select(idx) {
+      if (!items.length) return;
+      if (cursor >= 0 && items[cursor]) items[cursor].setAttribute("aria-selected", "false");
+      cursor = Math.max(0, Math.min(items.length - 1, idx));
+      var el = items[cursor];
+      el.setAttribute("aria-selected", "true");
+      input.setAttribute("aria-activedescendant", el.id || "");
+      el.scrollIntoView({ block: "nearest" });
+    }
+
+    function go(idx) {
+      var el = items[idx || 0];
+      if (el) window.location.href = el.getAttribute("data-href");
+    }
+
+    function empty(text, isHtml) {
+      results.textContent = "";
+      var div = document.createElement("div");
+      div.className = "bs-empty";
+      if (isHtml) div.innerHTML = text; else div.textContent = text;
+      results.appendChild(div);
+      cursor = -1;
+    }
+
+    function render(list, terms, query) {
+      items = [];
+      cursor = -1;
+      results.textContent = "";
+      list.forEach(function (entry, i) {
+        var doc = entry.doc || entry;
+        var a = document.createElement("a");
+        a.className = "bs-item";
+        a.href = doc.link;
+        a.setAttribute("data-href", doc.link);
+        a.setAttribute("id", host + "-" + i);
+        a.setAttribute("role", "option");
+        a.setAttribute("aria-selected", "false");
+
+        var h3 = document.createElement("h3");
+        highlight(h3, doc.title || doc.link, terms);
+        a.appendChild(h3);
+
+        var sub = document.createElement("div");
+        sub.className = "bs-sub";
+        if (doc.date) { var t = document.createElement("time"); t.textContent = doc.date; sub.appendChild(t); }
+        if (doc.section) { var s = document.createElement("span"); s.textContent = LABELS[doc.section] || doc.section; sub.appendChild(s); }
+        if (doc.tags) { var tg = document.createElement("span"); tg.textContent = "#" + doc.tags.split(/\s+/).join(" #"); sub.appendChild(tg); }
+        if (sub.childNodes.length) a.appendChild(sub);
+
+        var snip = snippet(doc, terms);
+        if (snip) {
+          var p = document.createElement("p");
+          highlight(p, snip, terms);
+          a.appendChild(p);
+        }
+
+        // mouseenter 跟随选中，不抢输入焦点
+        a.addEventListener("mousemove", function () { if (cursor !== i) select(i); });
+        results.appendChild(a);
+        items.push(a);
+      });
+    }
+
+    function run() {
+      var query = input.value.trim();
+      if (clearBtn) clearBtn.hidden = query === "";
+      if (!query) {
+        results.textContent = "";
+        items = [];
+        cursor = -1;
+        loadIndex().then(function (all) {
+          setMeta(all.length ? "输入关键词开始搜索，支持空格分词与 \"精确短语\"" : "站内还没有可搜索的内容");
+        }).catch(function (e) { setMeta("搜索索引加载失败：" + e.message); });
+        return;
+      }
+      loadIndex().then(function (all) {
+        var parsed = parseQuery(query);
+        var terms = parsed.terms;
+        var started = performance.now();
+        var pool = section ? all.filter(function (d) { return d.section === section; }) : all;
+        var scored = [];
+        pool.forEach(function (d) {
+          var s = scoreDoc(d, terms);
+          if (s > 0) scored.push({ doc: d, score: s });
+        });
+        scored.sort(function (a, b) {
+          if (b.score !== a.score) return b.score - a.score;
+          return (b.doc.date || "").localeCompare(a.doc.date || "");
+        });
+        var top = scored.slice(0, limit);
+        var ms = (performance.now() - started).toFixed(1);
+        if (!scored.length) {
+          setMeta("没有匹配 “" + query + "” 的内容");
+          empty("没有找到与 <code>" + query.replace(/[<>&]/g, "") + "</code> 相关的文章。", true);
+          return;
+        }
+        setMeta("找到 " + scored.length + " 篇" + (scored.length > top.length ? "，显示前 " + top.length + " 篇" : "") + " · " + ms + " ms");
+        render(top, terms, query);
+        select(0);
+      }).catch(function (e) { setMeta("搜索索引加载失败：" + e.message); });
+    }
+
+    function schedule() {
+      clearTimeout(timer);
+      timer = setTimeout(run, DEBOUNCE);
+    }
+
+    input.addEventListener("input", schedule);
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); select(cursor + 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); select(cursor - 1); }
+      else if (e.key === "Enter") {
+        if (items.length) { e.preventDefault(); go(cursor < 0 ? 0 : cursor); }
+      }
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () { input.value = ""; run(); input.focus(); });
+    }
+
+    // 首次渲染时把总数写到页脚
+    loadIndex().then(function (all) {
+      if (totalEl) totalEl.textContent = all.length;
+      if (!input.value.trim()) setMeta("输入关键词开始搜索，支持空格分词与 \"精确短语\"");
+    }).catch(function (e) { setMeta("搜索索引加载失败：" + e.message); });
+
+    return {
+      focus: function () { input.focus(); input.select(); },
+      setQuery: function (q) { input.value = q || ""; run(); },
+      run: run,
+      input: input
+    };
+  }
+
+  window.BlogSearch = { create: create, load: loadIndex };
+})();
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var modal = document.getElementById("bs-modal");
+  if (!modal || !window.BlogSearch) return;
+  var ctrl = window.BlogSearch.create(modal, { limit: 20 });
+  var lastFocus = null;
+  var open = false;
+
+  function openModal(initial) {
+    if (open) { if (initial) ctrl.setQuery(initial); ctrl.focus(); return; }
+    open = true;
+    lastFocus = document.activeElement;
+    modal.hidden = false;
+    modal.setAttribute("aria-hidden", "false");
+    document.documentElement.classList.add("bs-lock");
+    ctrl.focus();
+    if (initial) ctrl.setQuery(initial); else ctrl.run();
+  }
+
+  function closeModal() {
+    if (!open) return;
+    open = false;
+    modal.hidden = true;
+    modal.setAttribute("aria-hidden", "true");
+    document.documentElement.classList.remove("bs-lock");
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+  }
+
+  window.blogSearchOpen = openModal;
+  window.blogSearchClose = closeModal;
+
+  // 任何指向 /search/ 的链接（含主题菜单、“搜索”项）都改成开弹窗
+  document.addEventListener("click", function (e) {
+    if (!(e.target instanceof Element)) return;
+    if (e.target.closest("[data-search-open]")) { e.preventDefault(); openModal(); return; }
+    if (e.target.closest("[data-search-close]")) { e.preventDefault(); closeModal(); return; }
+    var a = e.target.closest("a[href]");
+    if (!a || a.target === "_blank" || e.metaKey || e.ctrlKey || e.shiftKey || a.getAttribute("download")) return;
+    var href = a.getAttribute("href") || "";
+    if (!/(^|\/)search\/?($|[?#])/.test(href)) return;
+    e.preventDefault();
+    var q = "";
+    try { q = new URL(a.href, location.href).searchParams.get("q") || ""; } catch (err) {}
+    openModal(q);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    var el = e.target;
+    var typing = el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+    if (open) {
+      if (e.key === "Escape") { e.preventDefault(); closeModal(); }
+      return;
+    }
+    if ((e.key === "k" || e.key === "K") && (e.ctrlKey || e.metaKey)) { e.preventDefault(); openModal(); }
+    else if (e.key === "/" && !typing) { e.preventDefault(); openModal(); }
+  });
+
+  // 弹窗内输入框每次打开都重置为空的状态由 create() 维护；
+  // 这里不额外处理 /search/ 页面，见 layouts/search/list.html
+})();
+</script>

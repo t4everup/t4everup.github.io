@@ -1,0 +1,35 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Site.Title }}</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    {{ with site.Home.OutputFormats.Get "rss" -}}
+    <link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Site.Title }}">
+    {{ end }}
+    <style>
+        .digio-lightbox figure { margin: 1em 0; }
+        .digio-lightbox-open img { cursor: zoom-in; max-width: 100%; height: auto; }
+        .digio-lightbox-overlay {
+            position: fixed; inset: 0; z-index: 9999; display: none;
+            align-items: center; justify-content: center;
+            background: rgba(0,0,0,.88); padding: 2rem;
+        }
+        .digio-lightbox-overlay:target { display: flex; }
+        .digio-lightbox-overlay img {
+            max-width: 92vw; max-height: 92vh; object-fit: contain;
+            box-shadow: 0 0 20px rgba(0,0,0,.6);
+        }
+        .digio-lightbox-overlay figcaption {
+            position: fixed; bottom: 1rem; left: 0; right: 0; text-align: center;
+            color: #fff; font-size: .85rem;
+        }
+        .digio-lightbox-close {
+            position: fixed; top: 1rem; right: 1.5rem; font-size: 2.5rem;
+            color: #fff; line-height: 1; text-decoration: none; z-index: 10000;
+        }
+    </style>
+</head>

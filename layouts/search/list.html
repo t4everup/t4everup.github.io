@@ -1,0 +1,48 @@
+{{ define "main" }}
+<div class="mx-auto w-full max-w-4xl px-4 py-6">
+  <h1 class="text-3xl font-bold mb-4">{{ .Title }}</h1>
+
+  <div class="bs-panel bs-panel--inline" role="search" aria-label="站内搜索">
+    <div class="bs-head">
+      <svg class="bs-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input
+        class="bs-input"
+        data-search-input
+        id="bs-page-input"
+        type="search"
+        placeholder="搜索标题、标签、正文…（/ 或 Ctrl+K 随时唤出弹窗）"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="站内搜索"
+      >
+      <button class="bs-x" type="button" data-search-clear title="清空" aria-label="清空" hidden>&times;</button>
+    </div>
+    <p class="bs-meta" data-search-meta role="status" aria-live="polite"></p>
+    <div class="bs-results" id="bs-page-results" data-search-results role="listbox" aria-label="搜索结果"></div>
+    <div class="bs-foot">
+      <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> 选择</span>
+      <span><kbd>&crarr;</kbd> 打开</span>
+      <span class="bs-foot-r">共 <b data-search-total>0</b> 篇</span>
+    </div>
+  </div>
+
+  <div class="bs-tip">{{ .Content }}</div>
+</div>
+
+<style>
+  .bs-tip { margin-top: 1.5rem; font-size: .8rem; color: rgba(255,255,255,.45); }
+  .bs-tip code { color: #f9a8d4; }
+</style>
+
+<script>
+  // 依赖 baseof 末尾 search-modal.html 提供的 window.BlogSearch，
+  // 所以等 load（DOM 与脚本都就绪）再挂载。
+  window.addEventListener("load", function () {
+    var root = document.querySelector(".bs-panel--inline");
+    if (!root || !window.BlogSearch) return;
+    var ctrl = window.BlogSearch.create(root, { limit: 30 });
+    var q = new URLSearchParams(location.search).get("q");
+    if (q) ctrl.setQuery(q);
+  });
+</script>
+{{ end }}

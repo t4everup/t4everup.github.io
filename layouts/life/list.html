@@ -1,0 +1,28 @@
+{{ define "main" }}
+<div class="mx-auto w-full max-w-4xl px-4 py-6">
+  <h1 class="text-3xl font-bold mb-8">{{ .Title }}</h1>
+  {{ .Content }}
+
+  {{ $posts := sort .Pages "Date" "desc" }}
+
+  {{ if $posts }}
+  <div class="grid gap-6 mt-8">
+    {{ range $posts }}
+    <a href="{{ .RelPermalink }}" class="block">
+      <article class="not-prose flex cursor-pointer flex-col space-y-4 rounded-lg border border-transparent p-6 transition-all duration-150 hover:border-pink-300">
+        <h2 class="text-xl font-semibold">
+          <span class="text-white">{{ .LinkTitle }}</span>
+        </h2>
+        <ul class="pl-5">
+          <li><time class="text-sm text-gray-300">{{ .Date.Format "2006-01-02" }}</time></li>
+          {{ with .Summary }}<li><em class="text-gray-300">{{ . | plainify | truncate 140 }}</em></li>{{ end }}
+        </ul>
+      </article>
+    </a>
+    {{ end }}
+  </div>
+  {{ else }}
+  <p class="text-gray-400 mt-8">还没有小记，敬请期待。</p>
+  {{ end }}
+</div>
+{{ end }}

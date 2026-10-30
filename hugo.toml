@@ -1,0 +1,57 @@
+baseURL = 'https://t4everup.github.io/'
+locale = 'en-us'
+title = 'My New Hugo Project'
+languageCode = "zh-cn"
+theme = "digio"
+
+[params]
+  author = "168"
+  description = "this is my blog"
+
+  [params.social]
+    github = "https://github.com/yourname"
+    email = "your@email.com"
+    twitter = ""
+    bilibili = ""
+
+# 站内搜索：home 额外输出 /index.json 作为搜索索引
+[outputs]
+  home = ["html", "rss", "json"]
+
+[outputFormats.json]
+  mediaType = "application/json"
+  baseName = "index"
+  isPlainText = true
+  notAlternative = true
+
+[menu]
+  [[menu.main]]
+    identifier = "about"
+    name = "关于"
+    url = "/about/"
+    weight = 1
+  [[menu.main]]
+    identifier = "blog"
+    name = "文章"
+    url = "/blog/"
+    weight = 2
+  [[menu.main]]
+    identifier = "archives"
+    name = "归档"
+    url = "/archives/"
+    weight = 3
+  [[menu.main]]
+    identifier = "life"
+    name = "生活"
+    url = "/life/"
+    weight = 4
+  [[menu.main]]
+    identifier = "friends"
+    name = "朋友"
+    url = "/friends/"
+    weight = 5
+  [[menu.main]]
+    identifier = "search"
+    name = "搜索"
+    url = "/search/"
+    weight = 6

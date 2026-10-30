@@ -1,0 +1,26 @@
+{{ define "main" }}
+<div class="mx-auto w-full max-w-4xl px-4 py-6">
+  <h1 class="text-3xl font-bold mb-8">{{ .Title }}</h1>
+  {{ .Content }}
+
+  {{ $pages := where site.RegularPages "Section" "in" (slice "blog" "post" "posts" "life") }}
+  {{ $pages = sort $pages "Date" "desc" }}
+  {{ $grouped := $pages.GroupByDate "2006" }}
+
+  {{ if $grouped }}
+    {{ range $grouped }}
+    <h2 class="text-xl font-semibold text-white py-2">{{ .Key }}</h2>
+    <ul class="list-none m-0 p-0 mb-8">
+      {{ range .Pages }}
+      <li class="py-2">
+        <a href="{{ .RelPermalink }}" class="block text-white underline">{{ .LinkTitle }}</a>
+        <span class="text-sm text-gray-300">{{ .Date.Format "2006-01-02" }}</span>
+      </li>
+      {{ end }}
+    </ul>
+    {{ end }}
+  {{ else }}
+  <p class="text-gray-400 mt-8">还没有文章。</p>
+  {{ end }}
+</div>
+{{ end }}

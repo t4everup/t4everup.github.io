@@ -1,0 +1,23 @@
+# 友链数据，每一条 [[friends]] 是一串友链
+# name        : 名字
+# url         : 对方博客/主页链接
+# avatar      : 头像图片 URL（外链地址或本站 /static 里的图片路径），可留空则不显示头像
+# description : 一句话介绍
+
+[[friends]]
+  name = "张三的博客"
+  url = "https://zhangsan.example.com"
+  avatar = "https://zhangsan.example.com/avatar.png"
+  description = "专注后端与安全，偶尔写写生活随笔。"
+
+[[friends]]
+  name = "李四"
+  url = "https://lisi.example.com"
+  avatar = "https://gravatar.com/avatar/lisi"
+  description = "前端开发，热爱开源与设计。"
+
+[[friends]]
+  name = "王五的小站"
+  url = "https://wangwu.example.com"
+  avatar = ""
+  description = "记录踩坑与学习的日常。"

@@ -1,0 +1,27 @@
+{{ define "main" }}
+<div class="mx-auto w-full max-w-4xl px-4 py-6">
+  <h1 class="text-3xl font-bold mb-8">{{ .Title }}</h1>
+  {{ .Content }}
+
+  {{ with site.Data.friends.friends }}
+  <div class="grid lg:grid-cols-2 gap-4 mt-8">
+    {{ range . }}
+    <a
+      href="{{ .url }}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="not-prose flex cursor-pointer flex-col space-y-4 rounded-lg border border-white p-6 transition-all duration-150 hover:border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-300"
+    >
+      <span class="flex items-center">
+        {{ with .avatar }}<img src="{{ . }}" alt="" class="w-[98px] mr-2">{{ end }}
+        <span class="text-xl font-semibold text-white">{{ .name }}</span>
+      </span>
+      {{ with .description }}<span class="text-sm text-gray-300">{{ . }}</span>{{ end }}
+    </a>
+    {{ end }}
+  </div>
+  {{ else }}
+  <p class="text-gray-400 mt-8">还没有友链，快把朋友们加进来吧。</p>
+  {{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,41 @@
+{{ define "main" }}
+{{ $p := .Params }}
+<div class="grid lg:grid-cols-2 gap-4">
+	<div class="not-prose flex cursor-default flex-col space-y-4 rounded-lg border border-white p-4">
+		<img src="{{ or $p.portraitImage "/portrait.png" }}" alt="Portrait" class="w-full h-auto">
+		<div>
+			{{ with $p.introTitle }}<strong>{{ . }}</strong>{{ end }}
+			{{ with $p.introBody }}{{ . | markdownify }}{{ end }}
+		</div>
+	</div>
+	<div class="grid lg:grid-rows-2 gap-4">
+		<div class="not-prose flex cursor-default flex-col space-y-2 rounded-lg border border-white p-6">
+			<img src="{{ or $p.statusImage "/status.png" }}" alt="Status" class="self-start">
+			{{ with $p.statusText }}<div>{{ . | markdownify }}</div>{{ end }}
+		</div>
+		<div class="not-prose flex cursor-default flex-col space-y-2 rounded-lg border border-white p-6">
+			<img src="{{ or $p.watchingImage "/watching.png" }}" alt="Watching" class="self-start">
+			{{ if or $p.watchingUrl $p.watchingText }}
+				<p class="underline">
+					{{ if $p.watchingUrl }}<a href="{{ $p.watchingUrl }}">{{ end }}
+					{{ or $p.watchingText "" }}
+					{{ if $p.watchingUrl }}</a>{{ end }}
+				</p>
+			{{ end }}
+		</div>
+	</div>
+</div>
+
+<div class="not-prose mt-8 rounded-lg border border-white p-6">
+	<strong class="block mb-4">联系我</strong>
+	<ul class="flex list-none m-0 p-0 gap-6">
+		{{ with site.Params.social.github }}<li><a class="text-white underline" href="{{ . }}" target="_blank" rel="noopener noreferrer">GitHub</a></li>{{ end }}
+		{{ with site.Params.social.bilibili }}<li><a class="text-white underline" href="{{ . }}" target="_blank" rel="noopener noreferrer">Bilibili</a></li>{{ end }}
+		{{ with site.Params.social.twitter }}<li><a class="text-white underline" href="{{ . }}" target="_blank" rel="noopener noreferrer">Twitter</a></li>{{ end }}
+		{{ with site.Params.social.email }}<li><a class="text-white underline" href="mailto:{{ . }}">{{ . }}</a></li>{{ end }}
+		{{ with .OutputFormats.Get "rss" }}<li><a class="text-white underline" href="{{ .RelPermalink }}">RSS 订阅</a></li>{{ end }}
+	</ul>
+</div>
+
+{{ .Content }}
+{{ end }}
