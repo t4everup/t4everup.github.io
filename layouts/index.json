@@ -6,15 +6,19 @@
 {{- $pages := where site.RegularPages "Params.searchExclude" "ne" true -}}
 {{- $items := slice -}}
 {{- range $pages -}}
-  {{- $text := .Plain | htmlUnescape | chomp | truncate 4000 "" -}}
-  {{- $items = $items | append (dict
-      "title"   .Title
-      "link"    .RelPermalink
-      "date"    (.Date.Format "2006-01-02")
-      "section" .Section
-      "tags"    (delimit (.Params.tags | default slice) " ")
-      "summary" (.Summary | plainify | htmlUnescape | chomp | truncate 300 "")
-      "text"    $text
-    ) -}}
+  {{- /* 跳过没有正文的占位页（例如主题自带的 stub 页），它们只会污染搜索结果 */ -}}
+  {{- $plain := .Plain | htmlUnescape | chomp -}}
+  {{- if ge (len $plain) 1 -}}
+    {{- $text := $plain | truncate 4000 "" -}}
+    {{- $items = $items | append (dict
+        "title"   .Title
+        "link"    .RelPermalink
+        "date"    (.Date.Format "2006-01-02")
+        "section" .Section
+        "tags"    (delimit (.Params.tags | default slice) " ")
+        "summary" (.Summary | plainify | htmlUnescape | chomp | truncate 300 "")
+        "text"    $text
+      ) -}}
+  {{- end -}}
 {{- end -}}
 {{- dict "pages" $items | jsonify -}}

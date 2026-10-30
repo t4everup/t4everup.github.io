@@ -35,6 +35,11 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      - name: Drop theme demo content
+        # digio 主题自带的 content/ 里有 me.md 和 write/open-source 的示例页，
+        # Hugo 会把主题 content 一起渲染，这里删掉避免 demo 页上线
+        run: rm -rf themes/digio/content
+
       - name: Build
         run: hugo --minify --gc --baseURL "${{ steps.pages.outputs.base_url }}/"
 
