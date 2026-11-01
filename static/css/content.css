@@ -337,3 +337,11 @@
 /* ---------- 锚点跳转定位 ---------- */
 .article-body :is(h1, h2, h3, h4, h5, h6)[id] { scroll-margin-top: 5.5rem; }
 .article-body a { color: #f9a8d4; }
+
+/* ---------- 归档页标题旁的文章计数（纯文字，无装饰） ---------- */
+.archive-count {
+  font-size: 0.55em;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}

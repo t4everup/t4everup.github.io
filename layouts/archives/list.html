@@ -1,11 +1,13 @@
 {{ define "main" }}
+{{ $pages := where site.RegularPages "Section" "in" (slice "blog" "post" "posts" "life") }}
+{{ $pages = sort $pages "Date" "desc" }}
+{{ $grouped := $pages.GroupByDate "2006" }}
 <div class="mx-auto w-full max-w-4xl px-4 py-6">
-  <h1 class="text-3xl font-bold mb-8">{{ .Title }}</h1>
+  <h1 class="text-3xl font-bold mb-8 flex items-baseline gap-3 flex-wrap">
+    <span>{{ .Title }}</span>
+    <span class="archive-count">共 {{ len $pages }} 篇</span>
+  </h1>
   {{ .Content }}
-
-  {{ $pages := where site.RegularPages "Section" "in" (slice "blog" "post" "posts" "life") }}
-  {{ $pages = sort $pages "Date" "desc" }}
-  {{ $grouped := $pages.GroupByDate "2006" }}
 
   {{ if $grouped }}
     {{ range $grouped }}

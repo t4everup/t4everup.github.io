@@ -5,11 +5,6 @@
 # description : 一句话介绍
 # 数据迁移自旧博客 https://blog.foreverwl.top/links
 
-[[friends]]
-  name = "小白"
-  url = "https://www.cnblogs.com/Foreverwlwl/"
-  avatar = "https://blog.foreverwl.top/upload/QQ%E5%9B%BE%E7%89%8720221216140528.jpg"
-  description = "小白一个"
 
 [[friends]]
   name = "FSRM"
