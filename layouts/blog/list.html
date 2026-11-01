@@ -4,10 +4,11 @@
 
   {{ $posts := where .RegularPages "Type" "blog" }}
   {{ $posts = sort $posts "Date" "desc" }}
+  {{ $paginator := .Paginate $posts }}
 
-  {{ if $posts }}
+  {{ if $paginator.Pages }}
   <div class="grid gap-6 mt-8">
-    {{ range $posts }}
+    {{ range $paginator.Pages }}
     <a href="{{ .RelPermalink }}" class="block">
       <article class="not-prose flex cursor-pointer flex-col space-y-4 rounded-lg border border-transparent p-6 transition-all duration-150 hover:border-pink-300">
         <h2 class="text-xl font-semibold">
@@ -15,11 +16,14 @@
         </h2>
         <ul class="pl-5">
           <li><time class="text-sm text-gray-300">{{ .Date.Format "2006-01-02" }}</time></li>
-          {{ with .Summary }}<li><em class="text-gray-300">{{ . | plainify | truncate 140 }}</em></li>{{ end }}        </ul>
+          {{ with .Summary }}<li><em class="text-gray-300">{{ . | plainify | truncate 140 }}</em></li>{{ end }}
+        </ul>
       </article>
     </a>
     {{ end }}
   </div>
+
+  {{ partial "pagination.html" $paginator }}
   {{ else }}
   <p class="text-gray-400 mt-8">还没有文章。</p>
   {{ end }}

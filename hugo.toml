@@ -23,6 +23,12 @@ enableGitInfo = true
   lastmod = ["lastmod", ":git", "date", ":fileModTime", ":default"]
   publishDate = ["publishDate", "date", ":git", ":fileModTime", ":default"]
 
+# ============ 分页 ============
+# 每页文章数，作用于 /blog/ 、/life/ 等列表页
+[pagination]
+  pagerSize = 10
+  path = "page"
+
 # ============ Markdown 渲染配置 ============
 # 目标是：直接扔进来的标准 Markdown 文件，所有常见语法都能正确渲染。
 [markup]

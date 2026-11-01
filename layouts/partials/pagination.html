@@ -1,0 +1,48 @@
+{{/* 分页导航。传入 .Paginator（或 .Paginate 的返回值）。
+     页数少时全部展开；页数多时保留首尾页 + 当前页附近，中间用省略号：
+       1 2 3 … 12   /   1 … 5 [6] 7 … 12   /   1 … 10 11 12
+*/}}
+{{- $p := . -}}
+{{- if gt $p.TotalPages 1 -}}
+{{- $current := $p.PageNumber -}}
+{{- $total := $p.TotalPages -}}
+{{- $showAll := le $total 7 -}}
+{{- $start := sub $current 1 -}}
+{{- $end := add $current 1 -}}
+{{- if le $current 2 -}}
+  {{- $start = 1 -}}
+  {{- $end = 3 -}}
+{{- else if ge $current (sub $total 1) -}}
+  {{- $start = sub $total 2 -}}
+  {{- $end = $total -}}
+{{- end -}}
+<nav class="pagination" aria-label="分页导航">
+  {{- if $p.HasPrev }}
+  <a class="page-btn page-prev" href="{{ $p.Prev.URL }}" rel="prev">← 上一页</a>
+  {{- else }}
+  <span class="page-btn page-prev is-disabled">← 上一页</span>
+  {{- end }}
+
+  <span class="page-numbers">
+    {{- range $p.Pagers }}
+      {{- $n := .PageNumber }}
+      {{- $show := or $showAll (eq $n 1) (eq $n $total) (and (ge $n $start) (le $n $end)) }}
+      {{- if $show }}
+        {{- if eq $n $current }}
+    <span class="page-num is-current" aria-current="page">{{ $n }}</span>
+        {{- else }}
+    <a class="page-num" href="{{ .URL }}">{{ $n }}</a>
+        {{- end }}
+      {{- else if or (eq $n (sub $start 1)) (eq $n (add $end 1)) }}
+    <span class="page-ellipsis">…</span>
+      {{- end }}
+    {{- end }}
+  </span>
+
+  {{- if $p.HasNext }}
+  <a class="page-btn page-next" href="{{ $p.Next.URL }}" rel="next">下一页 →</a>
+  {{- else }}
+  <span class="page-btn page-next is-disabled">下一页 →</span>
+  {{- end }}
+</nav>
+{{- end -}}

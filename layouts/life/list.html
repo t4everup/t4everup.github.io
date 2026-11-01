@@ -4,10 +4,11 @@
   {{ .Content }}
 
   {{ $posts := sort .Pages "Date" "desc" }}
+  {{ $paginator := .Paginate $posts }}
 
-  {{ if $posts }}
+  {{ if $paginator.Pages }}
   <div class="grid gap-6 mt-8">
-    {{ range $posts }}
+    {{ range $paginator.Pages }}
     <a href="{{ .RelPermalink }}" class="block">
       <article class="not-prose flex cursor-pointer flex-col space-y-4 rounded-lg border border-transparent p-6 transition-all duration-150 hover:border-pink-300">
         <h2 class="text-xl font-semibold">
@@ -21,6 +22,8 @@
     </a>
     {{ end }}
   </div>
+
+  {{ partial "pagination.html" $paginator }}
   {{ else }}
   <p class="text-gray-400 mt-8">还没有小记，敬请期待。</p>
   {{ end }}
