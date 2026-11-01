@@ -1,0 +1,169 @@
+{{/* 文章单页：正文保持居中，宽屏时目录悬浮在右侧空白处 */}}
+
+{{ define "main" }}
+<style>
+  /* ---------- 正文：完全沿用原主题的居中宽度 ---------- */
+
+  /* ---------- 目录 ---------- */
+  .article-toc {
+    font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+  .article-toc-title {
+    margin: 0 0 0.6rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #f9a8d4;
+    white-space: nowrap;
+  }
+  .article-toc ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+  }
+  .article-toc ul ul {
+    padding-left: 0.9rem;
+  }
+  .article-toc li {
+    margin: 0.1rem 0;
+  }
+  .article-toc a {
+    display: block;
+    color: rgba(255, 255, 255, 0.62);
+    text-decoration: none;
+    transition: color 0.15s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .article-toc a:hover {
+    color: #f9a8d4;
+  }
+  .article-toc a.is-active {
+    color: #f9a8d4;
+    font-weight: 600;
+  }
+
+  /* 宽屏（正文两侧有足够空白）：目录固定悬浮在正文右侧，不挤占正文 */
+  @media (min-width: 1440px) {
+    .article-toc {
+      position: fixed;
+      top: 6rem;
+      left: calc(50% + 29rem);
+      width: 15rem;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      padding-left: 1.1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      z-index: 10;
+    }
+  }
+
+  /* 窄屏：目录收进正文上方的可滚动小卡片，正文宽度不受影响 */
+  @media (max-width: 1439px) {
+    .article-toc {
+      margin-bottom: 2rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0.6rem;
+      max-height: 40vh;
+      overflow-y: auto;
+    }
+  }
+</style>
+
+{{ $toc := .TableOfContents }}
+{{ if and $toc (ne $toc "<nav id=\"TableOfContents\"></nav>") }}
+<aside class="article-toc" aria-label="本文目录">
+  <p class="article-toc-title">本文目录</p>
+  {{ $toc }}
+</aside>
+{{ end }}
+
+<article class="article-body">
+  <h1 class="py-2">{{ partial "page-title.html" . }}</h1>
+  {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+  {{ $dateHuman := .Date | time.Format ":date_long" }}
+  <time datetime="{{ $dateMachine }}" class="block mb-4">{{ $dateHuman }}</time>
+  {{ .Content }}
+  <div class="mt-6">
+    {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+  </div>
+</article>
+
+<script>
+  (function () {
+    var toc = document.querySelector(".article-toc");
+    if (!toc) return;
+    var links = [].slice.call(toc.querySelectorAll('a[href^="#"]'));
+    if (!links.length) return;
+    var targets = links
+      .map(function (a) {
+        var id = decodeURIComponent(a.getAttribute("href").slice(1));
+        var el = document.getElementById(id);
+        return el ? { link: a, el: el } : null;
+      })
+      .filter(Boolean);
+    if (!targets.length) return;
+
+    function setActive(link) {
+      links.forEach(function (l) { l.classList.toggle("is-active", l === link); });
+    }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var offset = 120;
+        var current = targets[0];
+        for (var i = 0; i < targets.length; i++) {
+          if (targets[i].el.getBoundingClientRect().top <= offset) current = targets[i];
+          else break;
+        }
+        setActive(current.link);
+        ticking = false;
+      });
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+
+{{/* ---------- 数学公式：KaTeX 自动渲染 ---------- */}}
+{{ if or (strings.Contains .Content "$") (strings.Contains .Content "\\[") (strings.Contains .Content "\\(") }}
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof renderMathInElement !== "function") return;
+    var el = document.querySelector(".article-body");
+    if (!el) return;
+    renderMathInElement(el, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\[", right: "\\]", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false }
+      ],
+      throwOnError: false,
+      ignoredClasses: ["highlight", "chroma", "mermaid"]
+    });
+  });
+</script>
+{{ end }}
+
+{{/* ---------- Mermaid 图表 ---------- */}}
+{{ if strings.Contains .Content "class=\"mermaid\"" }}
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: "dark",
+    securityLevel: "loose",
+    fontFamily: "Fira Code, monospace"
+  });
+  await mermaid.run({ querySelector: ".mermaid" });
+</script>
+{{ end }}
+{{ end }}

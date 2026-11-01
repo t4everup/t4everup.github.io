@@ -3,21 +3,64 @@
 # url         : 对方博客/主页链接
 # avatar      : 头像图片 URL（外链地址或本站 /static 里的图片路径），可留空则不显示头像
 # description : 一句话介绍
+# 数据迁移自旧博客 https://blog.foreverwl.top/links
 
 [[friends]]
-  name = "张三的博客"
-  url = "https://zhangsan.example.com"
-  avatar = "https://zhangsan.example.com/avatar.png"
-  description = "专注后端与安全，偶尔写写生活随笔。"
+  name = "小白"
+  url = "https://www.cnblogs.com/Foreverwlwl/"
+  avatar = "https://blog.foreverwl.top/upload/QQ%E5%9B%BE%E7%89%8720221216140528.jpg"
+  description = "小白一个"
 
 [[friends]]
-  name = "李四"
-  url = "https://lisi.example.com"
-  avatar = "https://gravatar.com/avatar/lisi"
-  description = "前端开发，热爱开源与设计。"
+  name = "FSRM"
+  url = "https://fsrm1.github.io/"
+  avatar = "https://foreverwlwl.oss-cn-beijing.aliyuncs.com/typora/202311301216961.jpg"
+  description = "web佬"
 
 [[friends]]
-  name = "王五的小站"
-  url = "https://wangwu.example.com"
-  avatar = ""
-  description = "记录踩坑与学习的日常。"
+  name = "Sta8r9"
+  url = "https://www.cnblogs.com/Sta8r9/"
+  avatar = "https://foreverwlwl.oss-cn-beijing.aliyuncs.com/typora/202311301212694.jpg"
+  description = "很帅的pwner"
+
+[[friends]]
+  name = "spoula"
+  url = "https://spoula.top/"
+  avatar = "https://foreverwlwl.oss-cn-beijing.aliyuncs.com/typora/202311301212991.png"
+  description = "だるい..."
+
+[[friends]]
+  name = "ZIKH26"
+  url = "https://zikh26.github.io/"
+  avatar = "https://blog-1311372141.cos.ap-nanjing.myqcloud.com/images/202307011626843.jpg"
+  description = "万古凡间一过客 九天之上第一仙"
+
+[[friends]]
+  name = "CH13hh"
+  url = "https://ch13hh.github.io/"
+  avatar = "https://foreverwlwl.oss-cn-beijing.aliyuncs.com/typora/202412062120929.png"
+  description = "贼强的pwn学徒"
+
+[[friends]]
+  name = "Chromos2me's Blog"
+  url = "https://chromos2me.github.io/"
+  avatar = "https://foreverwlwl.oss-cn-beijing.aliyuncs.com/typora/202411062049316.jpg"
+  description = "全能的学徒"
+
+[[friends]]
+  name = "p0l1st"
+  url = "https://blog.p0l1st.top/"
+  avatar = "https://p0l1st.oss-cn-beijing.aliyuncs.com/img/202504252025606.jpeg"
+  description = "不多说，web天赋哥"
+
+[[friends]]
+  name = "Zer0"
+  url = "https://eznp.github.io/"
+  avatar = "https://kingofyou.oss-cn-beijing.aliyuncs.com/D:%5CBolg%5Chexo-blog%5Csource%5C_posts%5C%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0202412132116202.jpg"
+  description = "web手&区块链"
+
+[[friends]]
+  name = "Yliken"
+  url = "https://yliken.github.io/"
+  avatar = "https://yliken.github.io/img/essayhead/second.jpg"
+  description = "红豆生南国 春来发几枝 愿君多采撷 此物最相思"

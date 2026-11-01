@@ -1,0 +1,339 @@
+/* Generated using: hugo gen chromastyles --style=monokai */
+
+/* Background */ .bg { color:#f8f8f2;background-color:#272822; }
+/* PreWrapper */ .chroma { color:#f8f8f2;background-color:#272822;-webkit-text-size-adjust:none; }
+/* Error */ .chroma .err { color:#960050;background-color:#1e0010 }
+/* LineLink */ .chroma .lnlinks { outline:none;text-decoration:none;color:inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align:top;padding:0;margin:0;border:0; }
+/* LineTable */ .chroma .lntable { border-spacing:0;padding:0;margin:0;border:0; }
+/* LineHighlight */ .chroma .hl { background-color:#3c3d38 }
+/* LineNumbersTable */ .chroma .lnt { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f }
+/* LineNumbers */ .chroma .ln { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f }
+/* Line */ .chroma .line { display:flex; }
+/* Keyword */ .chroma .k { color:#66d9ef }
+/* KeywordConstant */ .chroma .kc { color:#66d9ef }
+/* KeywordDeclaration */ .chroma .kd { color:#66d9ef }
+/* KeywordNamespace */ .chroma .kn { color:#f92672 }
+/* KeywordPseudo */ .chroma .kp { color:#66d9ef }
+/* KeywordReserved */ .chroma .kr { color:#66d9ef }
+/* KeywordType */ .chroma .kt { color:#66d9ef }
+/* NameAttribute */ .chroma .na { color:#a6e22e }
+/* NameClass */ .chroma .nc { color:#a6e22e }
+/* NameConstant */ .chroma .no { color:#66d9ef }
+/* NameDecorator */ .chroma .nd { color:#a6e22e }
+/* NameException */ .chroma .ne { color:#a6e22e }
+/* NameOther */ .chroma .nx { color:#a6e22e }
+/* NameTag */ .chroma .nt { color:#f92672 }
+/* NameFunction */ .chroma .nf { color:#a6e22e }
+/* NameFunctionMagic */ .chroma .fm { color:#a6e22e }
+/* Literal */ .chroma .l { color:#ae81ff }
+/* LiteralDate */ .chroma .ld { color:#e6db74 }
+/* LiteralString */ .chroma .s { color:#e6db74 }
+/* LiteralStringAffix */ .chroma .sa { color:#e6db74 }
+/* LiteralStringBacktick */ .chroma .sb { color:#e6db74 }
+/* LiteralStringChar */ .chroma .sc { color:#e6db74 }
+/* LiteralStringDelimiter */ .chroma .dl { color:#e6db74 }
+/* LiteralStringDoc */ .chroma .sd { color:#e6db74 }
+/* LiteralStringDouble */ .chroma .s2 { color:#e6db74 }
+/* LiteralStringEscape */ .chroma .se { color:#ae81ff }
+/* LiteralStringHeredoc */ .chroma .sh { color:#e6db74 }
+/* LiteralStringInterpol */ .chroma .si { color:#e6db74 }
+/* LiteralStringOther */ .chroma .sx { color:#e6db74 }
+/* LiteralStringRegex */ .chroma .sr { color:#e6db74 }
+/* LiteralStringSingle */ .chroma .s1 { color:#e6db74 }
+/* LiteralStringSymbol */ .chroma .ss { color:#e6db74 }
+/* LiteralNumber */ .chroma .m { color:#ae81ff }
+/* LiteralNumberBin */ .chroma .mb { color:#ae81ff }
+/* LiteralNumberFloat */ .chroma .mf { color:#ae81ff }
+/* LiteralNumberHex */ .chroma .mh { color:#ae81ff }
+/* LiteralNumberInteger */ .chroma .mi { color:#ae81ff }
+/* LiteralNumberIntegerLong */ .chroma .il { color:#ae81ff }
+/* LiteralNumberOct */ .chroma .mo { color:#ae81ff }
+/* Operator */ .chroma .o { color:#f92672 }
+/* OperatorWord */ .chroma .ow { color:#f92672 }
+/* OperatorReserved */ .chroma .or { color:#f92672 }
+/* Punctuation */ .chroma .p { color:#f8f8f2 }
+/* Comment */ .chroma .c { color:#75715e }
+/* CommentHashbang */ .chroma .ch { color:#75715e }
+/* CommentMultiline */ .chroma .cm { color:#75715e }
+/* CommentSingle */ .chroma .c1 { color:#75715e }
+/* CommentSpecial */ .chroma .cs { color:#75715e }
+/* CommentPreproc */ .chroma .cp { color:#75715e }
+/* CommentPreprocFile */ .chroma .cpf { color:#75715e }
+/* GenericDeleted */ .chroma .gd { color:#f92672 }
+/* GenericEmph */ .chroma .ge { font-style:italic }
+/* GenericInserted */ .chroma .gi { color:#a6e22e }
+/* GenericStrong */ .chroma .gs { font-weight:bold }
+/* GenericSubheading */ .chroma .gu { color:#75715e }
+
+/* ==========================================================================
+   Markdown 内容全量样式
+   主题 digio 只定义了 p/a/h/ul/ol/blockquote/hr，其余元素（表格、代码、
+   图片、脚注、任务列表、删除线、上下标…）一律没样式，这里统一补齐。
+   ========================================================================== */
+
+/* ---------- 标题：带锚点，悬停显示 ---------- */
+.article-body h1,
+.article-body h2,
+.article-body h3,
+.article-body h4,
+.article-body h5,
+.article-body h6 {
+  position: relative;
+  scroll-margin-top: 5.5rem; /* 锚点跳转时避开顶部 */
+}
+.article-body h2 { margin: 2rem 0 0.75rem; }
+.article-body h3 { margin: 1.6rem 0 0.6rem; }
+.article-body h4 { margin: 1.3rem 0 0.5rem; }
+.article-body :is(h2, h3, h4):hover .heading-anchor { opacity: 1; }
+.heading-anchor {
+  margin-left: 0.4rem;
+  opacity: 0;
+  font-size: 0.8em;
+  color: #f9a8d4;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+/* 用 CSS 生成 # 符号，这样子标题锚点不会混进文章摘要 */
+.heading-anchor::after {
+  content: "#";
+}
+
+/* ---------- 段落 / 列表 ---------- */
+.article-body p { margin-bottom: 1rem; }
+.article-body ul,
+.article-body ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+.article-body ul { list-style: disc; }
+.article-body ol { list-style: decimal; }
+.article-body ul ul,
+.article-body ol ol,
+.article-body ul ol,
+.article-body ol ul {
+  margin: 0.25rem 0 0.25rem;
+}
+.article-body li { margin: 0.25rem 0; }
+.article-body li > p { margin-bottom: 0.5rem; }
+
+/* 任务列表 - [ ] / - [x] */
+.article-body .task-list-item {
+  list-style: none;
+  margin-left: -1.25rem;
+}
+.article-body .task-list-item input[type="checkbox"] {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+.article-body ul.contains-task-list { padding-left: 1.75rem; }
+
+/* 定义列表 */
+.article-body dl { margin: 0 0 1rem; }
+.article-body dt { font-weight: 600; margin-top: 0.6rem; }
+.article-body dd { margin: 0.2rem 0 0 1.25rem; color: rgba(255, 255, 255, 0.8); }
+
+/* ---------- 引用块 ---------- */
+.article-body blockquote {
+  border-left: 3px solid #f9a8d4;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0 0.4rem 0.4rem 0;
+  color: rgba(255, 255, 255, 0.82);
+}
+.article-body blockquote > :last-child { margin-bottom: 0; }
+
+/* ---------- 表格：边框、内边距、斑马纹、横向滚动 ---------- */
+.article-body .table-wrap {
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.5rem;
+}
+.article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+.article-body thead th {
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.article-body th,
+.article-body td {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  vertical-align: top;
+}
+.article-body tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.025); }
+.article-body tbody tr:hover { background: rgba(249, 168, 212, 0.07); }
+
+/* ---------- 代码 ---------- */
+.article-body code {
+  font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+}
+/* 行内代码 */
+.article-body :not(pre) > code {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.28rem;
+  padding: 0.1em 0.38em;
+  color: #f9d3e4;
+  word-break: break-word;
+}
+/* 代码块容器 */
+.article-body .highlight,
+.article-body pre {
+  margin: 1.1rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.article-body .highlight pre,
+.article-body pre > code {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  line-height: 1.65;
+  background: transparent;
+}
+/* 无语法高亮的裸 pre（``` 未标语言） */
+.article-body pre:not(.chroma):not(.highlight pre) {
+  background: #272822;
+  padding: 0.9rem 1rem;
+}
+.article-body pre code { background: none; border: none; padding: 0; color: inherit; }
+
+/* ---------- 图片 ---------- */
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.4rem;
+  display: block;
+  margin: 1rem auto;
+}
+.article-body figure { margin: 1.25rem 0; }
+.article-body figcaption {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 0.4rem;
+}
+
+/* ---------- 分隔线 ---------- */
+.article-body hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  margin: 2rem 0;
+}
+
+/* ---------- 删除线 / 上下标 / 标记 / 键盘键 ---------- */
+.article-body del,
+.article-body s { color: rgba(255, 255, 255, 0.55); }
+.article-body sup,
+.article-body sub { font-size: 0.75em; line-height: 0; }
+.article-body mark {
+  background: rgba(249, 168, 212, 0.28);
+  color: inherit;
+  padding: 0.05em 0.25em;
+  border-radius: 0.2rem;
+}
+.article-body kbd {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom-width: 2px;
+  border-radius: 0.3rem;
+  padding: 0.1em 0.42em;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82em;
+}
+.article-body abbr[title] {
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
+/* ---------- 脚注 ---------- */
+.article-body .footnotes {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.68);
+}
+.article-body .footnotes ol { padding-left: 1.25rem; }
+.article-body .footnotes li { margin: 0.3rem 0; }
+.article-body .footnote-ref a {
+  text-decoration: none;
+  font-size: 0.78em;
+  padding: 0 0.15em;
+  color: #f9a8d4;
+}
+.article-body .footnote-backref { text-decoration: none; margin-left: 0.3rem; }
+
+/* ---------- 数学公式（KaTeX） ---------- */
+.article-body .math-display,
+.article-body .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4rem 0;
+  margin: 1.1rem 0;
+}
+.article-body .katex { font-size: 1.05em; }
+
+/* ---------- Mermaid 图表 ---------- */
+.article-body .mermaid {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  text-align: center;
+  overflow-x: auto;
+}
+/* 未渲染时的原始 mermaid 代码不显示成代码块 */
+.article-body pre.mermaid-source { display: none; }
+
+/* ---------- details / summary 折叠块 ---------- */
+.article-body details {
+  margin: 1rem 0;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+.article-body summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #f9a8d4;
+}
+.article-body details[open] summary { margin-bottom: 0.6rem; }
+
+/* ---------- 提示块（GitHub 风格 > [!NOTE] 等） ---------- */
+.article-body .callout {
+  margin: 1rem 0;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid;
+  border-radius: 0 0.4rem 0.4rem 0;
+  background: rgba(255, 255, 255, 0.04);
+}
+.article-body .callout > :last-child { margin-bottom: 0; }
+.article-body .callout-title { font-weight: 600; margin-bottom: 0.35rem; }
+.article-body .callout-note { border-color: #60a5fa; }
+.article-body .callout-note .callout-title { color: #60a5fa; }
+.article-body .callout-tip { border-color: #34d399; }
+.article-body .callout-tip .callout-title { color: #34d399; }
+.article-body .callout-important { border-color: #a78bfa; }
+.article-body .callout-important .callout-title { color: #a78bfa; }
+.article-body .callout-warning { border-color: #fbbf24; }
+.article-body .callout-warning .callout-title { color: #fbbf24; }
+.article-body .callout-caution { border-color: #f87171; }
+.article-body .callout-caution .callout-title { color: #f87171; }
+
+/* ---------- 锚点跳转定位 ---------- */
+.article-body :is(h1, h2, h3, h4, h5, h6)[id] { scroll-margin-top: 5.5rem; }
+.article-body a { color: #f9a8d4; }

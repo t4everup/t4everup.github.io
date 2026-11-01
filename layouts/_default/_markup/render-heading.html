@@ -1,0 +1,7 @@
+{{/* 标题：自动加可点击锚点，方便分享定位。
+     锚点符号用 CSS ::after 生成，避免混进摘要（.Summary）文本。 */}}
+{{ $level := .Level }}
+{{ $anchor := .Anchor }}
+<h{{ $level }} id="{{ $anchor }}">
+  {{ .Text }}<a class="heading-anchor" href="#{{ $anchor }}" aria-label="链接到本节"></a>
+</h{{ $level }}>

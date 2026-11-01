@@ -1,0 +1,7 @@
+{{/* 代码块钩子：mermaid 交给 JS 画图，其余语言走标准 chroma 高亮 */}}
+{{- $lang := .Type -}}
+{{- if eq $lang "mermaid" -}}
+<div class="mermaid">{{ .Inner }}</div>
+{{- else -}}
+{{- transform.Highlight .Inner $lang .Options -}}
+{{- end -}}

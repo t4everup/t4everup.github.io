@@ -1,0 +1,13 @@
+{{/* 引用块钩子：Hugo 0.132+ 内置解析 GitHub 风格 > [!NOTE] / [!TIP] / [!WARNING] 等 */}}
+{{- if .AlertType -}}
+  {{- $titles := dict "note" "备注" "tip" "提示" "important" "重要" "warning" "警告" "caution" "注意" -}}
+  {{- $title := index $titles .AlertType | default (.AlertTitle | default "提示") -}}
+<div class="callout callout-{{ .AlertType }}">
+  <p class="callout-title">{{ $title }}</p>
+  {{ .Text }}
+</div>
+{{- else -}}
+<blockquote>
+  {{ .Text }}
+</blockquote>
+{{- end -}}

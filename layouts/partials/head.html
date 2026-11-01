@@ -1,12 +1,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .Site.Title }}</title>
+    <title>{{ if .IsPage }}{{ partial "page-title.html" . }} · {{ end }}{{ .Site.Title }}</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="/css/styles.css" rel="stylesheet">
+    <link href="/css/content.css" rel="stylesheet">
+    {{ if .IsPage }}
+    {{/* 数学公式（KaTeX）：只在文章页加载 */}}
+    <link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet">
+    {{ end }}
     {{ with site.Home.OutputFormats.Get "rss" -}}
     <link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Site.Title }}">
     {{ end }}

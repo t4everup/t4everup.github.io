@@ -1,0 +1,12 @@
+{{/* 页面标题：优先 front matter 的 title，没有就用文件名。
+     这样直接扔进 content/blog 的无头 md 也能有正常标题。 */}}
+{{- $title := .Title -}}
+{{- if not $title -}}
+  {{- with .File -}}
+    {{- $title = .ContentBaseName -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $title -}}
+  {{- $title = .Section -}}
+{{- end -}}
+{{- $title -}}

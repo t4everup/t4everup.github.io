@@ -1,0 +1,16 @@
+<p class="text-xs px-6 py-6" style="text-align: center; margin-bottom: 0;">
+    🕐 本站已运行
+    <span id="uptime-days">{{ $since := time (site.Params.uptimeSince | default "2023-08-05") }}{{ div (sub now.Unix $since.Unix) 86400 }}</span>
+    天
+    &nbsp;·&nbsp;
+    Made with ୨ <a href="https://github.com/danapixels/digio-theme" target="_blank" rel="noopener noreferrer">Digio</a> ୧ .
+</p>
+<script>
+    (function () {
+        var since = new Date("{{ site.Params.uptimeSince | default "2023-08-05" }}T00:00:00");
+        var el = document.getElementById("uptime-days");
+        if (!el || isNaN(since.getTime())) return;
+        var days = Math.max(0, Math.floor((Date.now() - since.getTime()) / 86400000));
+        el.textContent = days;
+    })();
+</script>

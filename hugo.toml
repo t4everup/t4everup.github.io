@@ -1,16 +1,80 @@
 baseURL = 'https://t4everup.github.io/'
 locale = 'en-us'
-title = 'My New Hugo Project'
+title = "168's blog"
 languageCode = "zh-cn"
 theme = "digio"
+
+# ============ 排除主题自带的 demo 内容 ============
+# digio 主题的 content/ 里带了示例页（me.md、write/test.md、open-source/test3.md…），
+# 其中 externalLinks 里的 "external example" 假数据会跑到首页底部「最近文章」。
+# 用 ignoreFiles 按路径过滤，不动 submodule 里的文件。
+ignoreFiles = ['themes/digio/content']
+
+# 读取 git 提交信息（用于给没有 front matter 的文章自动填充日期）
+enableGitInfo = true
+
+# ============ 直接扔 md 进来也能用 ============
+# 注意：列表里靠前的优先。front matter 里的字段必须放在占位符之前，
+# 否则 :git / :fileModTime 会反过来覆盖你手写的日期。
+# 没写 front matter 时：标题用文件名（模板里做了兜底，见 layouts/partials/page-title.html），
+# 日期按 git 提交时间 → 文件修改时间 → 构建时间 依次兜底。
+[frontmatter]
+  date = ["date", "publishDate", "lastmod", ":git", ":fileModTime", ":default"]
+  lastmod = ["lastmod", ":git", "date", ":fileModTime", ":default"]
+  publishDate = ["publishDate", "date", ":git", ":fileModTime", ":default"]
+
+# ============ Markdown 渲染配置 ============
+# 目标是：直接扔进来的标准 Markdown 文件，所有常见语法都能正确渲染。
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      # 允许正文中的原生 HTML：安全类文章常出现 Class<?>、<?php、<img>、<details> 等
+      unsafe = true
+      hardWraps = false
+      xhtml = false
+    [markup.goldmark.extensions]
+      definitionList = true   # 定义列表
+      footnote = true         # 脚注 [^1]
+      linkify = true          # 裸 URL 自动变链接
+      linkifyProtocol = "https"
+      strikethrough = true    # 删除线 ~~text~~
+      table = true            # 表格
+      taskList = true         # 任务列表 - [ ] / - [x]
+      typographer = false
+      # 数学公式：$$...$$ 、\[...\] 、\(...\) 、$...$
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['\[', '\]'], ['$$', '$$']]
+          inline = [['\(', '\)'], ['$', '$']]
+    [markup.goldmark.parser]
+      autoHeadingID = true
+      autoHeadingIDType = "github"
+      wrapStandAloneImageWithinParagraph = true
+      [markup.goldmark.parser.attribute]
+        block = true    # 支持 ## 标题 {#id .class}
+        title = true
+  [markup.highlight]
+    noClasses = false        # 用 CSS 类而不是内联样式（配合自定义 chroma 配色）
+    codeFences = true
+    guessSyntax = true
+    lineNos = false
+    lineNumbersInTable = false
+    tabWidth = 4
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4
+    ordered = false
 
 [params]
   author = "168"
   description = "this is my blog"
+  # 建站日期，页脚"运行时间"从此日起计算（格式 YYYY-MM-DD）
+  uptimeSince = "2023-08-05"
 
   [params.social]
-    github = "https://github.com/yourname"
-    email = "your@email.com"
+    github = "https://github.com/t4everup"
+    email = "168@foreverwl.top"
     twitter = ""
     bilibili = ""
 
