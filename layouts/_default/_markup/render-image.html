@@ -1,11 +1,13 @@
-{{ $url := .Destination }}
-<figure class="digio-lightbox">
-  <a href="#lightbox-{{ .Ordinal }}" class="digio-lightbox-open">
-    <img src="{{ $url }}" alt="{{ .Text }}" {{ with .Title }}title="{{ . }}"{{ end }} loading="lazy">
-  </a>
-  <div class="digio-lightbox-overlay" id="lightbox-{{ .Ordinal }}" role="dialog" aria-modal="true">
-    <a class="digio-lightbox-close" href="#" aria-label="close">&times;</a>
-    <img src="{{ $url }}" alt="{{ .Text }}">
-    {{ with .Title }}<figcaption>{{ . }}</figcaption>{{ end }}
-  </div>
+{{/* 图片：输出普通 <img data-lightbox>，放大由全局 JS 处理。
+     旧实现用 :target + href="#" 关闭，会把 URL 变成 # 并跳回页面顶部。 */}}
+{{- $url := .Destination -}}
+{{- $alt := .Text -}}
+{{- $title := .Title -}}
+{{- if $title -}}
+<figure class="post-figure">
+  <img src="{{ $url }}" alt="{{ $alt }}" title="{{ $title }}" loading="lazy" data-lightbox>
+  <figcaption>{{ $title }}</figcaption>
 </figure>
+{{- else -}}
+<img src="{{ $url }}" alt="{{ $alt }}" loading="lazy" data-lightbox>
+{{- end -}}

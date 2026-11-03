@@ -16,25 +16,55 @@
     <link rel="alternate" type="application/rss+xml" href="{{ .Permalink }}" title="{{ $.Site.Title }}">
     {{ end }}
     <style>
-        .digio-lightbox figure { margin: 1em 0; }
-        .digio-lightbox-open img { cursor: zoom-in; max-width: 100%; height: auto; }
-        .digio-lightbox-overlay {
-            position: fixed; inset: 0; z-index: 9999; display: none;
-            align-items: center; justify-content: center;
-            background: rgba(0,0,0,.88); padding: 2rem;
+        /* 图片放大浮层（配合 layouts/partials/lightbox.html） */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 2rem;
         }
-        .digio-lightbox-overlay:target { display: flex; }
-        .digio-lightbox-overlay img {
-            max-width: 92vw; max-height: 92vh; object-fit: contain;
-            box-shadow: 0 0 20px rgba(0,0,0,.6);
+        .lightbox-overlay[hidden] { display: none; }
+        .lightbox-img {
+            max-width: 92vw;
+            max-height: 86vh;
+            object-fit: contain;
+            border-radius: 0.4rem;
+            box-shadow: 0 0 24px rgba(0, 0, 0, 0.6);
+            cursor: default;
         }
-        .digio-lightbox-overlay figcaption {
-            position: fixed; bottom: 1rem; left: 0; right: 0; text-align: center;
-            color: #fff; font-size: .85rem;
+        .lightbox-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+            font-size: 2.5rem;
+            line-height: 1;
+            color: #fff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            opacity: 0.75;
+            transition: opacity 0.15s ease;
         }
-        .digio-lightbox-close {
-            position: fixed; top: 1rem; right: 1.5rem; font-size: 2.5rem;
-            color: #fff; line-height: 1; text-decoration: none; z-index: 10000;
+        .lightbox-close:hover { opacity: 1; }
+        .lightbox-caption {
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            margin: 0;
+            padding: 0 1rem;
+        }
+        /* 可放大的图片（markdown 渲染出来的图） */
+        img[data-lightbox] {
+            cursor: zoom-in;
         }
     </style>
 </head>

@@ -1,0 +1,70 @@
+{{/* 图片放大查看：全局单实例浮层。
+     不用 URL 锚点（:target），因此打开/关闭都不会改变地址、不会丢失滚动位置。 */}}
+<div class="lightbox-overlay" id="lightbox-overlay" hidden role="dialog" aria-modal="true" aria-label="图片预览">
+  <button type="button" class="lightbox-close" aria-label="关闭">&times;</button>
+  <img class="lightbox-img" alt="">
+  <p class="lightbox-caption" hidden></p>
+</div>
+
+<script>
+(function () {
+  var overlay = document.getElementById("lightbox-overlay");
+  if (!overlay) return;
+  var imgEl = overlay.querySelector(".lightbox-img");
+  var capEl = overlay.querySelector(".lightbox-caption");
+  var savedScroll = 0;
+
+  function open(src, alt, caption) {
+    imgEl.src = src;
+    imgEl.alt = alt || "";
+    if (caption) {
+      capEl.textContent = caption;
+      capEl.hidden = false;
+    } else {
+      capEl.hidden = true;
+      capEl.textContent = "";
+    }
+    // 锁定页面滚动，同时记住当前位置；补上滚动条宽度避免页面抖动
+    savedScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var sbw = window.innerWidth - document.documentElement.clientWidth;
+    if (sbw > 0) document.body.style.paddingRight = sbw + "px";
+    document.body.style.overflow = "hidden";
+    overlay.hidden = false;
+  }
+
+  function close() {
+    if (overlay.hidden) return;
+    overlay.hidden = true;
+    imgEl.removeAttribute("src");
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
+    // 双保险：把滚动位置放回去（正常情况下本来就没动）
+    var y = savedScroll;
+    requestAnimationFrame(function () {
+      window.scrollTo(0, y);
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    // 点击正文里可放大的图片
+    if (t && t.tagName === "IMG" && t.hasAttribute("data-lightbox")) {
+      if (t.closest("a")) return; // 被链接包住的图片保持原跳转行为
+      e.preventDefault();
+      var fig = t.closest("figure");
+      var cap = fig ? fig.querySelector("figcaption") : null;
+      open(t.currentSrc || t.src, t.alt, cap ? cap.textContent.trim() : "");
+      return;
+    }
+    // 关闭：点叉号或点击图片外的遮罩
+    if (overlay.hidden) return;
+    if (t === overlay || (t.classList && t.classList.contains("lightbox-close"))) {
+      close();
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") close();
+  });
+})();
+</script>
